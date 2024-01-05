@@ -12,7 +12,12 @@ enum GearCardType { mini, overlay }
 class GearGallery extends StatelessWidget {
   const GearGallery({super.key});
 
-  static GalleryView view = GalleryView("gear", Icons.inventory_2_outlined, Icons.inventory, GearGallery(), SizedBox());
+  static GalleryView view = GalleryView(
+      text: "gear",
+      iconData: Icons.inventory_2_outlined,
+      selectedIconData: Icons.inventory,
+      child: GearGallery(),
+      actionButtonHandler: SizedBox());
 
   Widget gearList(BuildContext context, GalleryModel galleryContext, GearModel gearContext) {
     Widget list = LayoutBuilder(builder: (context, constraints) {
@@ -53,6 +58,18 @@ class GearGallery extends StatelessWidget {
     return Consumer2<GalleryModel, GearModel>(builder: (context, galleryContext, gearContext, child) {
       Widget list =
           gearContext.gearLoaded ? gearList(context, galleryContext, gearContext) : gearLoading(context, gearContext);
+      Widget? actionButtonHandler = gearContext.gearLoaded
+          ? GearCard(
+              editMode: true,
+              cardType: GearCardType.overlay,
+              galleryContext: galleryContext,
+              gear: new Gear('', '', 0.0, '', '', '', []),
+              onGearAdd: (gear) {
+                gearContext.addGear(gear);
+              },
+            )
+          : null;
+      galleryContext.registerActionButtonHandler(actionButtonHandler);
       return Container(
           //decoration: BoxDecoration(border: Border.all(color: Colors.red)),
           child: Column(children: [const Text('test'), list]));

@@ -14,18 +14,9 @@ class GalleryActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer2<GalleryModel, GearModel>(builder: (context, galleryContext, gearContext, child) {
-      Widget newGearCard = GearCard(
-        editMode: true,
-        cardType: GearCardType.overlay,
-        galleryContext: galleryContext,
-        gear: new Gear('', '', 0.0, '', '', '', []),
-        onGearAdd: (gear) {
-          gearContext.addGear(gear);
-        },
-      );
       Widget button = FloatingActionButton(
           onPressed: () {
-            galleryContext.registerOverlay(context, newGearCard);
+            galleryContext.registerOverlay(context, galleryContext.actionButtonHandler!);
           },
           shape: Constants.roundedRectanlgeBorder,
           child: const Icon(Icons.add));

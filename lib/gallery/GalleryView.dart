@@ -11,12 +11,9 @@ class GalleryView {
   final IconData selectedIconData;
   final Widget child;
   final Widget? actionButtonHandler;
-  const GalleryView(this.text, this.iconData, this.selectedIconData, this.child, this.actionButtonHandler);
+  const GalleryView({required this.text, required this.iconData, required this.selectedIconData, required this.child, this.actionButtonHandler});
 }
 
 class GalleryViews {
   static List<GalleryView> views = [HomeGallery.view, GearGallery.view, GearLoadoutGallery.view];
 }
-
-
-

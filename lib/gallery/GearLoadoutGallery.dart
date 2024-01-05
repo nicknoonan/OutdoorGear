@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'GalleryView.dart';
 
 class GearLoadoutGallery extends StatelessWidget {
-  static GalleryView view = GalleryView("loadout", Icons.view_list_outlined, Icons.view_list, GearLoadoutGallery(), null);
+  static GalleryView view = GalleryView(
+      text: "loadout",
+      iconData: Icons.view_list_outlined,
+      selectedIconData: Icons.view_list,
+      child: GearLoadoutGallery());
 
   const GearLoadoutGallery({super.key});
 

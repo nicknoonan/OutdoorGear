@@ -6,6 +6,7 @@ class GalleryModel extends ChangeNotifier {
   GalleryView view = GalleryViews.views[1];
   bool actionView = false;
   OverlayEntry? overlay;
+  Widget? actionButtonHandler;
 
   void selectView(int index) {
     view = GalleryViews.views[index];
@@ -29,6 +30,10 @@ class GalleryModel extends ChangeNotifier {
       overlay = null;
     }
     notifyListeners();
+  }
+
+  void registerActionButtonHandler(Widget? actionButtonHandler) {
+    this.actionButtonHandler = actionButtonHandler;
   }
 
   OverlayEntry buildGalleryOverlayEntry(BuildContext context, Widget overlay) {

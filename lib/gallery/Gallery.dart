@@ -20,6 +20,5 @@ class Gallery extends StatelessWidget {
                   },
                   child: Row(children: [const GalleryNavigation(), GalleryBody(child: galleryContext.view.child)]))));
     });
-    //return const Expanded(child: Row(children: [GalleryNavigation(), GalleryBody()]));
   }
 }
