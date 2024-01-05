@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 class Gear {
   String name;
@@ -27,20 +27,35 @@ class Gear {
     return gearList.map((gear) => Gear.fromDynamic(gear)).toList();
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'brand': brand,
+      'weight': weight,
+      'type': type,
+      'category': category,
+      'description': description,
+      'tags': tags
+    };
+  }
+
   static Future<List<Gear>> loadGearAsset(String gearAssetPath) async {
-    String gearJson = await rootBundle.loadString(gearAssetPath);
     await Future.delayed(
-        const Duration(milliseconds: 200)); // simulate a load delay to make sure the UI is behaving properly
-    return Gear.fromDynamicList(jsonDecode(gearJson));
+        const Duration(milliseconds: 0)); // simulate a load delay to make sure the UI is behaving properly
+
+    File gearAssetFile = File(gearAssetPath);
+    String gearAssetJson = await gearAssetFile.readAsString();
+    return Gear.fromDynamicList(jsonDecode(gearAssetJson));
   }
 }
 
 class GearModel extends ChangeNotifier {
   List<Gear> gearList = List.empty();
   bool gearLoaded = false;
+  final String gearAssetPath = 'C:\\Users\\minke\\source\\repos\\OutdoorGear\\assets\\gear.json';
 
   GearModel() {
-    Gear.loadGearAsset('assets/gear.json').then((list) {
+    Gear.loadGearAsset(gearAssetPath).then((list) {
       gearList = list;
       gearLoaded = true;
       notifyListeners();
@@ -49,10 +64,24 @@ class GearModel extends ChangeNotifier {
 
   void addGear(Gear gear) {
     gearList.add(gear);
-    notifyListeners();
+    writeGearListToDisk().whenComplete(() {
+      notifyListeners();
+    });
   }
 
-  Future<void> writeGearToDisk() async{
-    
+  Future<void> writeGearListToDisk() async {
+    File gearAssetFile = File(gearAssetPath);
+    IOSink gearAssetFileSink = gearAssetFile.openWrite();
+    gearAssetFileSink.write(jsonEncode(gearList));
+    await gearAssetFileSink.flush();
+    await gearAssetFileSink.close();
+  }
+
+  void writeGearListToDiskSync(Function? callback) {
+    writeGearListToDisk().whenComplete(() {
+      if (null != callback) {
+        callback();
+      }
+    });
   }
 }

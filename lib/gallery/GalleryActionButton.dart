@@ -29,7 +29,9 @@ class GalleryActionButton extends StatelessWidget {
           },
           shape: Constants.roundedRectanlgeBorder,
           child: const Icon(Icons.add));
-      return galleryContext.view.actionButtonHandler == null || galleryContext.actionView ? const SizedBox() : button;
+      return galleryContext.view.actionButtonHandler == null || galleryContext.actionView || !gearContext.gearLoaded
+          ? const SizedBox()
+          : button;
     });
   }
 }

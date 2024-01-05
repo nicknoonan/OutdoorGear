@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../model/GalleryModel.dart';
 import '../widgets/GrayedOut.dart';
+import 'GalleryBody.dart';
 import 'GalleryNavigation.dart';
-import 'GalleryView.dart';
 
 class Gallery extends StatelessWidget {
   const Gallery({super.key});
@@ -18,7 +18,7 @@ class Gallery extends StatelessWidget {
                   onTap: () {
                     galleryContext.unregisterOverlay();
                   },
-                  child: Row(children: [GalleryNavigation(), GalleryBody()]))));
+                  child: Row(children: [const GalleryNavigation(), GalleryBody(child: galleryContext.view.child)]))));
     });
     //return const Expanded(child: Row(children: [GalleryNavigation(), GalleryBody()]));
   }

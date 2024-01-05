@@ -16,6 +16,7 @@ class GearCard extends StatefulWidget {
   final Gear gear;
   final bool editMode;
   final Function(Gear)? onGearAdd;
+  final Function()? writeGearListToDiskSync;
 
   const GearCard(
       {super.key,
@@ -23,7 +24,8 @@ class GearCard extends StatefulWidget {
       required this.galleryContext,
       required this.gear,
       required this.editMode,
-      this.onGearAdd});
+      this.onGearAdd,
+      this.writeGearListToDiskSync});
 
   @override
   _GearCardState createState() => _GearCardState();
@@ -40,6 +42,7 @@ class _GearCardState extends State<GearCard> {
   late String editType;
   late String editBrand;
   late Function(Gear)? onGearAdd;
+  late Function()? writeGearListToDiskSync;
 
   @override
   void initState() {
@@ -54,6 +57,7 @@ class _GearCardState extends State<GearCard> {
     editType = gear.type;
     editBrand = gear.brand;
     onGearAdd = widget.onGearAdd;
+    writeGearListToDiskSync = widget.writeGearListToDiskSync;
   }
 
   void toggleEditMode() {
@@ -68,7 +72,7 @@ class _GearCardState extends State<GearCard> {
     Function()? cardOnTap = !galleryContext.actionView && cardType == GearCardType.mini
         ? () {
             galleryContext.registerOverlay(context,
-                GearCard(editMode: false, cardType: GearCardType.overlay, galleryContext: galleryContext, gear: gear));
+                GearCard(editMode: false, cardType: GearCardType.overlay, galleryContext: galleryContext, gear: gear, writeGearListToDiskSync: writeGearListToDiskSync));
           }
         : null;
 
@@ -95,6 +99,9 @@ class _GearCardState extends State<GearCard> {
           gear.brand = editBrand;
           if (onGearAdd != null) {
             onGearAdd!(gear);
+          }
+          if (writeGearListToDiskSync != null) {
+            writeGearListToDiskSync!();
           }
           toggleEditMode();
         },

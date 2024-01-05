@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'GalleryView.dart';
 
 class HomeGallery extends StatelessWidget {
-  static GalleryView view() {
-    return GalleryView("home", Icons.home_outlined, Icons.home_rounded, HomeGallery(), null);
-  }
+  static GalleryView view = GalleryView("home", Icons.home_outlined, Icons.home_rounded, HomeGallery(), null);
 
   const HomeGallery({super.key});
 

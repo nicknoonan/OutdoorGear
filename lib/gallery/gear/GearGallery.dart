@@ -12,9 +12,7 @@ enum GearCardType { mini, overlay }
 class GearGallery extends StatelessWidget {
   const GearGallery({super.key});
 
-  static GalleryView view() {
-    return GalleryView("gear", Icons.inventory_2_outlined, Icons.inventory, GearGallery(), SizedBox());
-  }
+  static GalleryView view = GalleryView("gear", Icons.inventory_2_outlined, Icons.inventory, GearGallery(), SizedBox());
 
   Widget gearList(BuildContext context, GalleryModel galleryContext, GearModel gearContext) {
     Widget list = LayoutBuilder(builder: (context, constraints) {
@@ -29,7 +27,15 @@ class GearGallery extends StatelessWidget {
                   spacing: 10,
                   runSpacing: 10,
                   children: gearContext.gearList.map((gear) {
-                    return GearCard(editMode: false, galleryContext: galleryContext, gear: gear, cardType: GearCardType.mini);
+                    return GearCard(
+                      editMode: false,
+                      galleryContext: galleryContext,
+                      gear: gear,
+                      cardType: GearCardType.mini,
+                      writeGearListToDiskSync: () {
+                        gearContext.writeGearListToDiskSync(null);
+                      },
+                    );
                   }).toList())));
     });
     return Expanded(child: list);
