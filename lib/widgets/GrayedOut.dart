@@ -4,7 +4,7 @@ class GrayedOut extends StatelessWidget {
   final Widget child;
   final bool grayedOut;
 
-  GrayedOut({required this.child, this.grayedOut = true});
+  const GrayedOut({super.key, required this.child, this.grayedOut = true});
 
   @override
   Widget build(BuildContext context) {

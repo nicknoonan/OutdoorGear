@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:outdoor_gear/gallery/gear/CloseCardButton.dart';
 import 'package:outdoor_gear/gallery/gear/InfoTrio.dart';
+import 'package:outdoor_gear/gallery/gear/OptionButtons.dart';
 
 import '../../Constants.dart';
 import '../../model/GalleryModel.dart';
@@ -16,7 +18,7 @@ class GearCard extends StatefulWidget {
   final Gear gear;
   final bool editMode;
   final Function(Gear)? onGearAdd;
-  final Function()? writeGearListToDiskSync;
+  final Function(Gear)? updateGear;
 
   const GearCard(
       {super.key,
@@ -25,7 +27,7 @@ class GearCard extends StatefulWidget {
       required this.gear,
       required this.editMode,
       this.onGearAdd,
-      this.writeGearListToDiskSync});
+      this.updateGear});
 
   @override
   _GearCardState createState() => _GearCardState();
@@ -42,7 +44,8 @@ class _GearCardState extends State<GearCard> {
   late String editType;
   late String editBrand;
   late Function(Gear)? onGearAdd;
-  late Function()? writeGearListToDiskSync;
+  late Function(Gear)? updateGear;
+  bool saving = false;
 
   @override
   void initState() {
@@ -57,7 +60,7 @@ class _GearCardState extends State<GearCard> {
     editType = gear.type;
     editBrand = gear.brand;
     onGearAdd = widget.onGearAdd;
-    writeGearListToDiskSync = widget.writeGearListToDiskSync;
+    updateGear = widget.updateGear;
   }
 
   void toggleEditMode() {
@@ -71,20 +74,23 @@ class _GearCardState extends State<GearCard> {
     //handle what happens when the card is tapped!
     Function()? cardOnTap = !galleryContext.actionView && cardType == GearCardType.mini
         ? () {
-            galleryContext.registerOverlay(context,
-                GearCard(editMode: false, cardType: GearCardType.overlay, galleryContext: galleryContext, gear: gear, writeGearListToDiskSync: writeGearListToDiskSync));
+            galleryContext.registerOverlay(
+                context,
+                GearCard(
+                    editMode: false,
+                    cardType: GearCardType.overlay,
+                    galleryContext: galleryContext,
+                    gear: gear,
+                    updateGear: updateGear));
           }
         : null;
 
     //close card button
-    Widget closeCardButton = cardType == GearCardType.overlay
-        ? CloseButton(onPressed: () {
-            galleryContext.unregisterOverlay();
-          })
-        : const SizedBox();
+    CloseCardButton closeCardButton = CloseCardButton(cardType: cardType, galleryContext: galleryContext);
 
     //edit card button
-    Widget editCardButton = EditCardButton(
+    EditCardButton editCardButton = EditCardButton(
+        saving: saving,
         cardType: cardType,
         onEdit: () {
           //make some edits!
@@ -100,15 +106,15 @@ class _GearCardState extends State<GearCard> {
           if (onGearAdd != null) {
             onGearAdd!(gear);
           }
-          if (writeGearListToDiskSync != null) {
-            writeGearListToDiskSync!();
+          if (updateGear != null) {
+            updateGear!(gear);
           }
           toggleEditMode();
         },
         editMode: editMode);
 
     //option buttons row
-    Widget optionButtons = Row(children: [editCardButton, closeCardButton]);
+    Widget optionButtons = OptionButtons(editCardButton: editCardButton, closeCardButton: closeCardButton);
 
     //gear name and icon row
     Widget gearName = Expanded(

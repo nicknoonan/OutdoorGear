@@ -41,7 +41,7 @@ class GearCardTextField extends StatelessWidget {
                 hintText: hintText,
                 isDense: false,
                 labelText: labelText,
-                contentPadding: EdgeInsets.fromLTRB(0, 4, 0, 4)),
+                contentPadding: const EdgeInsets.fromLTRB(0, 4, 0, 4)),
             minLines: minLines,
             maxLines: maxLines,
             keyboardType: keyBoardType)

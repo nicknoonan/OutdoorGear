@@ -2,8 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:outdoor_gear/provider/DiskGearAssetProvider.dart';
+import 'package:outdoor_gear/provider/GearAssetProvider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class Gear {
+  UuidValue id;
   String name;
   String brand;
   double weight;
@@ -12,10 +17,11 @@ class Gear {
   String description;
   List<String> tags;
 
-  Gear(this.name, this.brand, this.weight, this.type, this.category, this.description, this.tags);
+  Gear(this.id, this.name, this.brand, this.weight, this.type, this.category, this.description, this.tags);
 
   Gear.fromDynamic(dynamic gear)
-      : name = gear['name'] as String,
+      : id = UuidValue.fromString(gear['id']),
+        name = gear['name'] as String,
         brand = gear['brand'] as String,
         weight = gear['weight'] as double,
         type = gear['type'] as String,
@@ -29,6 +35,7 @@ class Gear {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id.toString(),
       'name': name,
       'brand': brand,
       'weight': weight,
@@ -38,39 +45,45 @@ class Gear {
       'tags': tags
     };
   }
-
-  static Future<List<Gear>> loadGearAsset(String gearAssetPath) async {
-    await Future.delayed(
-        const Duration(milliseconds: 0)); // simulate a load delay to make sure the UI is behaving properly
-
-    File gearAssetFile = File(gearAssetPath);
-    String gearAssetJson = await gearAssetFile.readAsString();
-    return Gear.fromDynamicList(jsonDecode(gearAssetJson));
-  }
 }
 
 class GearModel extends ChangeNotifier {
   List<Gear> gearList = List.empty();
   bool gearLoaded = false;
-  final String gearAssetPath = 'C:\\Users\\minke\\source\\repos\\OutdoorGear\\assets\\gear.json';
+  double gearListInitialScrollOffset = 0;
+  final String assetPath = 'C:\\Users\\minke\\source\\repos\\OutdoorGear\\assets\\gear.json';
+  late GearAssetProvider assetProvider;
 
   GearModel() {
-    Gear.loadGearAsset(gearAssetPath).then((list) {
+    assetProvider = DiskGearAssetProvider(assetPath: assetPath);
+    assetProvider.loadGear().then((list) {
       gearList = list;
       gearLoaded = true;
       notifyListeners();
     });
   }
 
+  void setGearListInitialScrollOffset(double value) {
+    gearListInitialScrollOffset = value;
+  }
+
   void addGear(Gear gear) {
     gearList.add(gear);
-    writeGearListToDisk().whenComplete(() {
-      notifyListeners();
-    });
+    assetProvider.addGear(gear).whenComplete(() => notifyListeners());
+  }
+
+  void updateGear(Gear updateGear) {
+    //gearList.singleWhere((gear) => gear.id == updateGear.id);
+    // for (int i = 0; i < gearList.length; i++) {
+    //   if (gearList[i].id == updateGear.id) {
+    //     gearList[i] = updateGear;
+    //   }
+    // }
+    assetProvider.updateGear(updateGear).whenComplete(() => notifyListeners());
   }
 
   Future<void> writeGearListToDisk() async {
-    File gearAssetFile = File(gearAssetPath);
+    File gearAssetFile = File(assetPath);
     IOSink gearAssetFileSink = gearAssetFile.openWrite();
     gearAssetFileSink.write(jsonEncode(gearList));
     await gearAssetFileSink.flush();
