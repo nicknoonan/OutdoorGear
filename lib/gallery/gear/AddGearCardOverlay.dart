@@ -5,7 +5,6 @@ import 'package:outdoor_gear/model/GalleryModel.dart';
 import 'package:outdoor_gear/model/GearModel.dart';
 import 'package:outdoor_gear/widgets/GrayedOut.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 import 'package:uuid/v8.dart';
 
 class AddGearCardOverlay extends StatelessWidget {
@@ -20,9 +19,9 @@ class AddGearCardOverlay extends StatelessWidget {
       editMode: true,
       cardType: GearCardType.overlay,
       galleryContext: galleryContext,
-      gear: Gear(UuidValue.fromString(UuidV8().generate()),'', '', 0.0, '', '', '', []),
-      onGearAdd: (gear) {
-        gearContext.addGear(gear);
+      gear: Gear(UuidValue.fromString(const UuidV8().generate()), '', '', 0.0, '', '', '', []),
+      updateGear: (gear) {
+        gearContext.updateGear(gear);
       },
     );
     return overlay;

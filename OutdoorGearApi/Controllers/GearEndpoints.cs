@@ -50,9 +50,9 @@ public static class GearEndpoints
         .WithName("UpdateGear")
         .WithOpenApi();
 
-        group.MapPost("/", async (PostGearRequest postGearRequest, GearDbContext db) =>
+        group.MapPost("/", async (Gear gear, GearDbContext db) =>
         {
-            Gear gear = postGearRequest.toGear();
+            //Gear gear = postGearRequest.toGear();
             db.Gear.Add(gear);
             await db.SaveChangesAsync();
             return TypedResults.Created($"/api/Gear/{gear.Id}",gear);

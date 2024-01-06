@@ -17,8 +17,9 @@ class GearCard extends StatefulWidget {
   final GalleryModel galleryContext;
   final Gear gear;
   final bool editMode;
-  final Function(Gear)? onGearAdd;
   final Function(Gear)? updateGear;
+  final Function(Gear)? addGear;
+  final Function()? onTap;
 
   const GearCard(
       {super.key,
@@ -26,8 +27,9 @@ class GearCard extends StatefulWidget {
       required this.galleryContext,
       required this.gear,
       required this.editMode,
-      this.onGearAdd,
-      this.updateGear});
+      this.updateGear,
+      this.addGear,
+      this.onTap});
 
   @override
   _GearCardState createState() => _GearCardState();
@@ -43,8 +45,9 @@ class _GearCardState extends State<GearCard> {
   late double editWeight;
   late String editType;
   late String editBrand;
-  late Function(Gear)? onGearAdd;
   late Function(Gear)? updateGear;
+  late Function(Gear)? addGear;
+  late Function()? onTap;
   bool saving = false;
 
   @override
@@ -59,8 +62,9 @@ class _GearCardState extends State<GearCard> {
     editWeight = gear.weight;
     editType = gear.type;
     editBrand = gear.brand;
-    onGearAdd = widget.onGearAdd;
     updateGear = widget.updateGear;
+    addGear = widget.addGear;
+    onTap = widget.onTap;
   }
 
   void toggleEditMode() {
@@ -69,22 +73,19 @@ class _GearCardState extends State<GearCard> {
     });
   }
 
+  // void cardOnTap() {
+  //   galleryContext.registerOverlay(
+  //       context,
+  //       GearCard(
+  //           editMode: false,
+  //           cardType: GearCardType.overlay,
+  //           galleryContext: galleryContext,
+  //           gear: gear,
+  //           updateGear: updateGear));
+  // }
+
   @override
   Widget build(BuildContext context) {
-    //handle what happens when the card is tapped!
-    Function()? cardOnTap = !galleryContext.actionView && cardType == GearCardType.mini
-        ? () {
-            galleryContext.registerOverlay(
-                context,
-                GearCard(
-                    editMode: false,
-                    cardType: GearCardType.overlay,
-                    galleryContext: galleryContext,
-                    gear: gear,
-                    updateGear: updateGear));
-          }
-        : null;
-
     //close card button
     CloseCardButton closeCardButton = CloseCardButton(cardType: cardType, galleryContext: galleryContext);
 
@@ -103,11 +104,11 @@ class _GearCardState extends State<GearCard> {
           gear.weight = editWeight;
           gear.type = editType;
           gear.brand = editBrand;
-          if (onGearAdd != null) {
-            onGearAdd!(gear);
-          }
           if (updateGear != null) {
             updateGear!(gear);
+          }
+          if (addGear != null) {
+            addGear!(gear);
           }
           toggleEditMode();
         },
@@ -185,7 +186,7 @@ class _GearCardState extends State<GearCard> {
             shape: Constants.roundedRectanlgeBorder,
             margin: const EdgeInsets.all(0),
             child: InkWell(
-                onTap: cardOnTap,
+                onTap: onTap, //!galleryContext.actionView && cardType == GearCardType.mini ? cardOnTap : null,
                 borderRadius: Constants.borderRadius,
                 child: Container(
                     padding: padding,

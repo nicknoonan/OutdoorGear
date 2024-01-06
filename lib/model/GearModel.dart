@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:outdoor_gear/provider/DiskGearAssetProvider.dart';
 import 'package:outdoor_gear/provider/GearAssetProvider.dart';
+import 'package:outdoor_gear/provider/WebGearAssetProvider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/v4.dart';
 
@@ -23,7 +24,7 @@ class Gear {
       : id = UuidValue.fromString(gear['id']),
         name = gear['name'] as String,
         brand = gear['brand'] as String,
-        weight = gear['weight'] as double,
+        weight = double.parse(gear['weight'].toString()),
         type = gear['type'] as String,
         category = gear['category'] as String,
         description = gear['description'] as String,
@@ -51,11 +52,13 @@ class GearModel extends ChangeNotifier {
   List<Gear> gearList = List.empty();
   bool gearLoaded = false;
   double gearListInitialScrollOffset = 0;
-  final String assetPath = 'C:\\Users\\minke\\source\\repos\\OutdoorGear\\assets\\gear.json';
+  //final String assetPath = 'C:\\Users\\minke\\source\\repos\\OutdoorGear\\assets\\gear.json';
+  final String assetPath = 'https://localhost:7147';
   late GearAssetProvider assetProvider;
 
   GearModel() {
-    assetProvider = DiskGearAssetProvider(assetPath: assetPath);
+    //assetProvider = DiskGearAssetProvider(assetPath: assetPath);
+    assetProvider = WebGearAssetProvider(assetPath: assetPath);
     assetProvider.loadGear().then((list) {
       gearList = list;
       gearLoaded = true;
@@ -67,34 +70,13 @@ class GearModel extends ChangeNotifier {
     gearListInitialScrollOffset = value;
   }
 
-  void addGear(Gear gear) {
-    gearList.add(gear);
-    assetProvider.addGear(gear).whenComplete(() => notifyListeners());
-  }
-
   void updateGear(Gear updateGear) {
-    //gearList.singleWhere((gear) => gear.id == updateGear.id);
-    // for (int i = 0; i < gearList.length; i++) {
-    //   if (gearList[i].id == updateGear.id) {
-    //     gearList[i] = updateGear;
-    //   }
-    // }
-    assetProvider.updateGear(updateGear).whenComplete(() => notifyListeners());
-  }
-
-  Future<void> writeGearListToDisk() async {
-    File gearAssetFile = File(assetPath);
-    IOSink gearAssetFileSink = gearAssetFile.openWrite();
-    gearAssetFileSink.write(jsonEncode(gearList));
-    await gearAssetFileSink.flush();
-    await gearAssetFileSink.close();
-  }
-
-  void writeGearListToDiskSync(Function? callback) {
-    writeGearListToDisk().whenComplete(() {
-      if (null != callback) {
-        callback();
-      }
-    });
+    Gear? gear = gearList.where((gear) => gear.id == updateGear.id).firstOrNull;
+    if (null == gear) {
+      gearList.add(updateGear);
+      assetProvider.addGear(updateGear).whenComplete(() => notifyListeners());
+    } else {
+      assetProvider.updateGear(updateGear).whenComplete(() => notifyListeners());
+    }
   }
 }

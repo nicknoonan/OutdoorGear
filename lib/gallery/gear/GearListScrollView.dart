@@ -10,6 +10,10 @@ class GearListScrollView extends StatelessWidget {
 
   const GearListScrollView({super.key, required this.gearContext, required this.galleryContext});
 
+  void updateGear(Gear gear) {
+    gearContext.updateGear(gear);
+  }
+
   @override
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController(initialScrollOffset: gearContext.gearListInitialScrollOffset);
@@ -26,14 +30,21 @@ class GearListScrollView extends StatelessWidget {
             runSpacing: 10,
             children: gearContext.gearList.map((gear) {
               return GearCard(
-                editMode: false,
-                galleryContext: galleryContext,
-                gear: gear,
-                cardType: GearCardType.mini,
-                updateGear: (gear) {
-                  gearContext.updateGear(gear);
-                }
-              );
+                  editMode: false,
+                  galleryContext: galleryContext,
+                  gear: gear,
+                  cardType: GearCardType.mini,
+                  updateGear: updateGear,
+                  onTap: !galleryContext.actionView ? () {
+                    galleryContext.registerOverlay(
+                        context,
+                        GearCard(
+                            editMode: false,
+                            cardType: GearCardType.overlay,
+                            galleryContext: galleryContext,
+                            gear: gear,
+                            updateGear: updateGear));
+                  } : null);
             }).toList()));
   }
 }

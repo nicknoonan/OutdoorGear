@@ -5,14 +5,12 @@ import 'package:outdoor_gear/model/GearModel.dart';
 import 'package:outdoor_gear/provider/GearAssetProvider.dart';
 
 class DiskGearAssetProvider extends GearAssetProvider {
-  final String assetPath;
-
-  const DiskGearAssetProvider({required this.assetPath}) : super(assetPath: assetPath);
+  const DiskGearAssetProvider({required assetPath}) : super(assetPath: assetPath);
 
   @override
   Future<List<Gear>> loadGear() async {
-    await Future.delayed(
-        const Duration(milliseconds: 1000)); // simulate a load delay to make sure the UI is behaving properly
+    // await Future.delayed(
+    //     const Duration(milliseconds: 1000)); // simulate a load delay to make sure the UI is behaving properly
 
     File gearAssetFile = File(assetPath);
     String gearAssetJson = await gearAssetFile.readAsString();
@@ -20,11 +18,21 @@ class DiskGearAssetProvider extends GearAssetProvider {
   }
 
   @override
-  Future<void> updateGear(Gear updateGear) async {
+  Future<void> updateGear(Gear gear) async {
     List<Gear> gearList = await loadGear();
-    Gear gear = gearList.singleWhere((gear) => gear.id == updateGear.id);
-    gear = updateGear;
-    writeGearListToDisk(gearList);
+    Gear? updateGear;
+    int index = 0;
+    while (updateGear == null && index < gearList.length) {
+      if (gearList[index].id == gear.id) {
+        updateGear = gear;
+      } else {
+        index++;
+      }
+    }
+    if (updateGear != null) {
+      gearList[index] = updateGear;
+    }
+    await writeGearListToDisk(gearList);
   }
 
   @override

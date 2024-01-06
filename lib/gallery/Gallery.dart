@@ -14,11 +14,9 @@ class Gallery extends StatelessWidget {
     return Consumer<GalleryModel>(builder: (context, galleryContext, child) {
       return Expanded(
           child: GrayedOut(
-              grayedOut: false, //galleryContext.actionView,
+              grayedOut: galleryContext.actionView,
               child: GestureDetector(
-                  onDoubleTap: () {
-                    galleryContext.unregisterOverlay();
-                  },
+                  onDoubleTap: galleryContext.actionView ? () => galleryContext.unregisterOverlay() : null, //its important onDoubleTap is null when not needed. otherwise screen will lag for a second while waiting for a second tap
                   child: Row(children: [const GalleryNavigation(), GalleryBody(child: galleryContext.view.child)]))));
     });
   }
