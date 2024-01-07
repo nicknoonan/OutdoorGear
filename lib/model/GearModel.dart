@@ -70,13 +70,24 @@ class GearModel extends ChangeNotifier {
     gearListInitialScrollOffset = value;
   }
 
-  void updateGear(Gear updateGear) {
+  Future<void> updateGear(Gear updateGear) async {
     Gear? gear = gearList.where((gear) => gear.id == updateGear.id).firstOrNull;
     if (null == gear) {
       gearList.add(updateGear);
-      assetProvider.addGear(updateGear).whenComplete(() => notifyListeners());
+      await assetProvider.addGear(updateGear);
+      notifyListeners();
     } else {
-      assetProvider.updateGear(updateGear).whenComplete(() => notifyListeners());
+      await assetProvider.updateGear(updateGear);
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteGear(Gear deleteGear) async {
+    Gear? gear = gearList.where((gear) => gear.id == deleteGear.id).firstOrNull;
+    if (null != gear) {
+      gearList.remove(gear);
+      await assetProvider.deleteGear(gear);
+      notifyListeners();
     }
   }
 }

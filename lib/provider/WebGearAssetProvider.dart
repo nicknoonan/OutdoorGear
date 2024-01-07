@@ -10,7 +10,10 @@ class WebGearAssetProvider extends GearAssetProvider {
 
   @override
   Future<List<Gear>> loadGear() async {
-    final gearResponse = await http.get(Uri.parse("$assetPath/api/gear"));
+    String getGearUri = "$assetPath/api/gear";
+    print("[get] $getGearUri");
+    //await Future.delayed(Duration(milliseconds: 1000));
+    final gearResponse = await http.get(Uri.parse(getGearUri));
     if (gearResponse.statusCode == 200) {
       List<Gear> gearList = Gear.fromDynamicList(jsonDecode(gearResponse.body));
       return gearList;
@@ -33,9 +36,12 @@ class WebGearAssetProvider extends GearAssetProvider {
     }
     if (updateGear != null) {
       String gearJson = jsonEncode(gear);
+      String updateGearUri = "$assetPath/api/gear/${gear.id}";
+      print("[put] $updateGearUri");
       print(gearJson);
-      final gearResponse = await http.put(Uri.parse("$assetPath/api/gear/${gear.id}"),
-          body: gearJson, headers: {'content-type': 'application/json'});
+      //await Future.delayed(Duration(milliseconds: 1000));
+      final gearResponse =
+          await http.put(Uri.parse(updateGearUri), body: gearJson, headers: {'content-type': 'application/json'});
       print(gearResponse.statusCode);
     }
   }
@@ -43,17 +49,20 @@ class WebGearAssetProvider extends GearAssetProvider {
   @override
   Future<void> addGear(Gear gear) async {
     String gearJson = jsonEncode(gear);
+    String postGearUri = "$assetPath/api/gear";
+    print("[post] $postGearUri");
     print(gearJson);
-    final gearResponse = await http.post(Uri.parse("$assetPath/api/gear"),
-        body: gearJson, headers: {'content-type': 'application/json'});
+    final gearResponse =
+        await http.post(Uri.parse(postGearUri), body: gearJson, headers: {'content-type': 'application/json'});
     print(gearResponse.statusCode);
   }
 
-  Future<void> writeGearListToDisk(List<Gear> gearList) async {
-    File gearAssetFile = File(assetPath);
-    IOSink gearAssetFileSink = gearAssetFile.openWrite();
-    gearAssetFileSink.write(jsonEncode(gearList));
-    await gearAssetFileSink.flush();
-    await gearAssetFileSink.close();
+  @override
+  Future<void> deleteGear(Gear gear) async {
+    String deleteGearUri = "$assetPath/api/gear/${gear.id}";
+    print("[delete] $deleteGearUri");
+    //await Future.delayed(Duration(milliseconds: 1000));
+    final deleteResponse = await http.delete(Uri.parse(deleteGearUri));
+    print(deleteResponse.statusCode);
   }
 }

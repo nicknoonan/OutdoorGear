@@ -42,6 +42,11 @@ class DiskGearAssetProvider extends GearAssetProvider {
     await writeGearListToDisk(gearList);
   }
 
+  @override
+  Future<void> deleteGear(Gear gear) async {
+    
+  }
+
   Future<void> writeGearListToDisk(List<Gear> gearList) async {
     File gearAssetFile = File(assetPath);
     IOSink gearAssetFileSink = gearAssetFile.openWrite();

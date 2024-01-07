@@ -10,4 +10,6 @@ abstract class GearAssetProvider {
   Future<void> updateGear(Gear gear);
 
   Future<void> addGear(Gear gear);
+
+  Future<void> deleteGear(Gear gear);
 }

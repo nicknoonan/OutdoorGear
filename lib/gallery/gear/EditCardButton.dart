@@ -10,20 +10,29 @@ class EditCardButton extends StatelessWidget {
   final GearCardType cardType;
 
   const EditCardButton(
-      {super.key, required this.onEdit, required this.onSave, required this.editMode, required this.cardType, required this.saving});
+      {super.key,
+      required this.onEdit,
+      required this.onSave,
+      required this.editMode,
+      required this.cardType,
+      required this.saving});
 
   @override
   Widget build(BuildContext context) {
-    Widget editCardButton = cardType == GearCardType.overlay
+    double size = cardType == GearCardType.overlay ? 40 : 0;
+    Widget button = cardType == GearCardType.overlay
         ? IconButton(
             icon: editMode ? const Icon(Icons.save) : const Icon(Icons.edit),
             onPressed: () => editMode ? onSave() : onEdit())
         : const SizedBox();
-    
+
     Widget progressIndicator = CircularProgressIndicator(
+      strokeAlign: -4,
       valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColorLight),
     );
-    
-    return saving ? progressIndicator : editCardButton;
+
+    Widget editCardButton = SizedBox(width: size, child: saving ? progressIndicator : button);
+
+    return editCardButton;
   }
 }

@@ -34,17 +34,27 @@ class GearListScrollView extends StatelessWidget {
                   galleryContext: galleryContext,
                   gear: gear,
                   cardType: GearCardType.mini,
-                  updateGear: updateGear,
-                  onTap: !galleryContext.actionView ? () {
-                    galleryContext.registerOverlay(
-                        context,
-                        GearCard(
-                            editMode: false,
-                            cardType: GearCardType.overlay,
-                            galleryContext: galleryContext,
-                            gear: gear,
-                            updateGear: updateGear));
-                  } : null);
+                  updateGear: (gear) {
+                    return gearContext.updateGear(gear);
+                  },
+                  onTap: !galleryContext.actionView
+                      ? () {
+                          galleryContext.registerOverlay(
+                              context,
+                              GearCard(
+                                editMode: false,
+                                cardType: GearCardType.overlay,
+                                galleryContext: galleryContext,
+                                gear: gear,
+                                updateGear: (gear) {
+                                  return gearContext.updateGear(gear);
+                                },
+                                deleteGear: (gear) {
+                                  return gearContext.deleteGear(gear);
+                                },
+                              ));
+                        }
+                      : null);
             }).toList()));
   }
 }

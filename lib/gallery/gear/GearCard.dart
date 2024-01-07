@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:outdoor_gear/gallery/gear/CloseCardButton.dart';
+import 'package:outdoor_gear/gallery/gear/DeleteCardButton.dart';
 import 'package:outdoor_gear/gallery/gear/InfoTrio.dart';
 import 'package:outdoor_gear/gallery/gear/OptionButtons.dart';
 
@@ -17,8 +18,8 @@ class GearCard extends StatefulWidget {
   final GalleryModel galleryContext;
   final Gear gear;
   final bool editMode;
-  final Function(Gear)? updateGear;
-  final Function(Gear)? addGear;
+  final Future<void> Function(Gear)? updateGear;
+  final Future<void> Function(Gear)? deleteGear;
   final Function()? onTap;
 
   const GearCard(
@@ -28,7 +29,7 @@ class GearCard extends StatefulWidget {
       required this.gear,
       required this.editMode,
       this.updateGear,
-      this.addGear,
+      this.deleteGear,
       this.onTap});
 
   @override
@@ -45,10 +46,11 @@ class _GearCardState extends State<GearCard> {
   late double editWeight;
   late String editType;
   late String editBrand;
-  late Function(Gear)? updateGear;
-  late Function(Gear)? addGear;
+  late Future<void> Function(Gear)? updateGear;
+  late Future<void> Function(Gear)? deleteGear;
   late Function()? onTap;
   bool saving = false;
+  bool deleting = false;
 
   @override
   void initState() {
@@ -63,13 +65,25 @@ class _GearCardState extends State<GearCard> {
     editType = gear.type;
     editBrand = gear.brand;
     updateGear = widget.updateGear;
-    addGear = widget.addGear;
+    deleteGear = widget.deleteGear;
     onTap = widget.onTap;
   }
 
   void toggleEditMode() {
     setState(() {
       editMode = !editMode;
+    });
+  }
+
+  void toggleSaving() {
+    setState(() {
+      saving = !saving;
+    });
+  }
+
+  void toggleDeleting() {
+    setState(() {
+      deleting = !deleting;
     });
   }
 
@@ -89,6 +103,18 @@ class _GearCardState extends State<GearCard> {
     //close card button
     CloseCardButton closeCardButton = CloseCardButton(cardType: cardType, galleryContext: galleryContext);
 
+    DeleteCardButton deleteCardButton = DeleteCardButton(
+      onDelete: () {
+        toggleDeleting();
+        deleteGear!(gear).whenComplete(() {
+          toggleDeleting();
+          galleryContext.unregisterOverlay();
+        });
+      },
+      cardType: cardType,
+      deleting: deleting,
+    );
+
     //edit card button
     EditCardButton editCardButton = EditCardButton(
         saving: saving,
@@ -99,23 +125,23 @@ class _GearCardState extends State<GearCard> {
         },
         onSave: () {
           //save the edits!
+          toggleSaving();
           gear.name = editName;
           gear.description = editDescription;
           gear.weight = editWeight;
           gear.type = editType;
           gear.brand = editBrand;
-          if (updateGear != null) {
-            updateGear!(gear);
-          }
-          if (addGear != null) {
-            addGear!(gear);
-          }
-          toggleEditMode();
+          Future<void> updateGearFuture = updateGear != null ? updateGear!(gear) : Future.delayed(Duration.zero);
+          updateGearFuture.whenComplete(() {
+            toggleSaving();
+            toggleEditMode();
+          });
         },
         editMode: editMode);
 
     //option buttons row
-    Widget optionButtons = OptionButtons(editCardButton: editCardButton, closeCardButton: closeCardButton);
+    Widget optionButtons = OptionButtons(
+        deleteCardButton: deleteCardButton, editCardButton: editCardButton, closeCardButton: closeCardButton);
 
     //gear name and icon row
     Widget gearName = Expanded(

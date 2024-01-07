@@ -21,7 +21,7 @@ class AddGearCardOverlay extends StatelessWidget {
       galleryContext: galleryContext,
       gear: Gear(UuidValue.fromString(const UuidV8().generate()), '', '', 0.0, '', '', '', []),
       updateGear: (gear) {
-        gearContext.updateGear(gear);
+        return gearContext.updateGear(gear);
       },
     );
     return overlay;
