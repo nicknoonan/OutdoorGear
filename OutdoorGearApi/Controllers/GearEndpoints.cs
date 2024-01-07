@@ -17,7 +17,8 @@ public static class GearEndpoints
             return await db.Gear.ToListAsync();
         })
         .WithName("GetAllGear")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
 
         group.MapGet("/{id}", async Task<Results<Ok<Gear>, NotFound>> (Guid id, GearDbContext db) =>
         {
@@ -28,7 +29,8 @@ public static class GearEndpoints
                     : TypedResults.NotFound();
         })
         .WithName("GetGearById")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
 
         group.MapPut("/{id}", async Task<Results<Ok, NotFound, BadRequest>> (Guid id, Gear gear, GearDbContext db) =>
         {
@@ -48,7 +50,8 @@ public static class GearEndpoints
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
         .WithName("UpdateGear")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
 
         group.MapPost("/", async (Gear gear, GearDbContext db) =>
         {
@@ -58,7 +61,8 @@ public static class GearEndpoints
             return TypedResults.Created($"/api/Gear/{gear.Id}",gear);
         })
         .WithName("CreateGear")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
 
         group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, GearDbContext db) =>
         {
@@ -68,6 +72,7 @@ public static class GearEndpoints
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
         .WithName("DeleteGear")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
     }
 }
