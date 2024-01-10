@@ -1,8 +1,3 @@
 {
-  "dependencies": {
-    "identityapp1": {
-      "connectionInfo": "App registration: OutdoorGearApi, Tenant: Default Directory (azure.nicknoonan.net - Microsoft Entra ID)",
-      "type": "identityapp.default"
-    }
-  }
+  "dependencies": {}
 }
