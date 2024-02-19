@@ -1192,7 +1192,6 @@ namespace OutdoorGearApi.Models
             };
             dbContext.Gear.AddRange(gear);
             dbContext.SaveChanges();
-            dbContext.SaveChanges();
         }
     }
 }

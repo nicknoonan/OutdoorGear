@@ -8,6 +8,8 @@ namespace OutdoorGearApi.Models
         public DbSet<Gear> Gear {  get; set; }
 
         public DbSet<User> GearUsers { get; set; }
+
+        public DbSet<Token> Tokens { get; set; }
         public GearDbContext(DbContextOptions<GearDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)

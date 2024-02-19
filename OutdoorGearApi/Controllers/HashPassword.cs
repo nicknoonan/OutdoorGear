@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace OutdoorGearApi.Shared
+namespace OutdoorGearApi.Controllers
 {
     static public class HashPassword
     {

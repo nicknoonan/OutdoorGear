@@ -2,7 +2,7 @@
 
 namespace OutdoorGearApi.Models.Request
 {
-    public class PostGearRequest
+    public class CreateGearRequest
     {
         public string Name { get; set; }
         public string Brand { get; set; }

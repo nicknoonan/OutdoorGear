@@ -10,11 +10,10 @@ using OutdoorGearApi.Models;
 using OutdoorGearApi.Models.Entity;
 using OutdoorGearApi.Models.Request;
 using OutdoorGearApi.Models.Response;
-using OutdoorGearApi.Shared;
 
 namespace OutdoorGearApi.Controllers
 {
-    [Authorize]
+    [Authorize()]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -50,32 +49,43 @@ namespace OutdoorGearApi.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> PutUser(Guid id, PutUserRequest userRequest)
         {
-            if (id != user.Id)
+            if (id != userRequest.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            User? user = await _context.GearUsers.SingleOrDefaultAsync(user => user.Id == userRequest.Id);
 
-            try
+            if (user == null)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!UserExists(id))
+                user.HMACSHA256 = HashPassword.Hash(userRequest.Password);
+                _context.Entry(user).State = EntityState.Modified;
+
+                try
                 {
-                    return NotFound();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!UserExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
+
+                return NoContent();
             }
 
-            return NoContent();
         }
 
         // POST: api/Users

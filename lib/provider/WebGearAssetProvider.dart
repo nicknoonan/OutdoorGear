@@ -44,6 +44,8 @@ class WebGearAssetProvider extends GearAssetProvider {
           await http.put(Uri.parse(updateGearUri), body: gearJson, headers: {'content-type': 'application/json'});
       print(gearResponse.statusCode);
     }
+    else {
+    }
   }
 
   @override
